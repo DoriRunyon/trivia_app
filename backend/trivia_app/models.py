@@ -5,24 +5,29 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
+class Game(models.Model):
+    name = models.CharField(max_length=20)
+    start_countdown_seconds = models.IntegerField()
+    question_countdown_seconds = models.IntegerField()
+    active = models.BooleanField()
 
-# class Question(models.Model):
-#     question_text = models.CharField(max_length=200)
-#     pub_date = models.DateTimeField('date published')
+class Question(models.Model):
+    question_text = models.CharField(max_length=500)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
-#     def __str__(self):
-#         return self.question_text
+    def __str__(self):
+        return self.question_text
 
-#     def was_published_recently(self):
-#         now = timezone.now()
-#         return now - datetime.timedelta(days=1) <= self.pub_date <= now
+class Answer(models.Model):
+    answer_text = models.CharField(max_length=200)
+    correct = models.BooleanField()
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+class Participant(models.Model):
+    name = models.CharField(max_length=20)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
-# class Choice(models.Model):
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     choice_text = models.CharField(max_length=200)
-#     votes = models.IntegerField(default=0)
-
-#     def __str__(self):
-#         return self.choice_text
+class ParticipantAnswer(models.Model):
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    score = models.IntegerField()
