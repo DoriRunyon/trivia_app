@@ -16,12 +16,16 @@ def index(request, pk):
 
 def get_game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
-    game_name = game.name
-    is_game_active = game.active 
+    try:
+        game_name = game.name
+        is_game_active = game.active 
 
-    game = {
-        "name": game.name,
-        "active": is_game_active 
-    }
+        game = {
+            "name": game.name,
+            "active": is_game_active 
+        }
 
-    return HttpResponse(json.dumps(game))
+        return HttpResponse(json.dumps(game))
+    except (Game.DoesNotExist):
+        error = { "message": "Game does not exist"}
+        return HttpResponse(json.dumps(error))
