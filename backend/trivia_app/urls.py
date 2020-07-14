@@ -9,7 +9,9 @@ import django_js_reverse.views
 
 urlpatterns = [
     path("", lambda request : redirect("/trivia_app/")),
+    path("int:pk/", views.index),
     path("admin/", admin.site.urls, name="admin"),
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
-    path("trivia_app/", views.index),
+    path("<int:pk>/trivia_app/", views.index),
+    path('<int:game_id>/get_game/', views.get_game, name='get_game'),
 ]
