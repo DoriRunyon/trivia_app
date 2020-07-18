@@ -5,6 +5,13 @@ import Welcome from './Welcome.js';
 const cookies = new Cookies();
 const DOMAIN = "http://localhost:8000";
 
+
+// Game Status
+const INACTIVE = 'INACTIVE'
+const SHOW_WELCOME = 'SHOW_WELCOME'
+const SHOW_QUESTION = 'SHOW_QUESTION'
+const SHOW_LEADERBOARD = 'SHOW_LEADERBOARD'
+
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -12,7 +19,7 @@ class Home extends React.Component {
       error: null,
       isLoaded: false,
       gameName: "",
-      gameActive: false,
+      gameStatus: INACTIVE,
       participantName: null,
       nameInput: "",
       showQuestion: false,
@@ -29,6 +36,7 @@ class Home extends React.Component {
     this.setState({
       participantName: this.state.nameInput
     });
+    // this also needs to POST to create participant and return a participant id
   }
 
   setNameInput(e) {
@@ -52,7 +60,7 @@ class Home extends React.Component {
           this.setState({
             isLoaded: true,
             gameName: result.name,
-            gameActive: result.active,
+            gameStatus: result.status,
           });
         },
         (error) => {
@@ -65,12 +73,12 @@ class Home extends React.Component {
   }
 
   render() {
-    const { error, isHost, isLoaded, gameActive, gameName, participantName } = this.state;
+    const { error, isHost, isLoaded, gameStatus, gameName, participantName } = this.state;
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
       return <div>Loading...</div>;
-    } else if (!participantName && !gameActive) {
+    } else if (!participantName && gameStatus == INACTIVE) {
       return (
           <div>
               <p>Please enter a name for yourself</p>
