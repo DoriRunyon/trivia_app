@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
+from django.views.decorators.csrf import csrf_exempt
 import json
 
-from .models import Game
+from .models import Game, Participant
 
 # Create your views here.
 
@@ -20,8 +21,23 @@ def update_game(request, game_id):
 def submit_answer(request, answer_id, participant_id):
     pass
 
-def create_participant(request, participant_name):
-    pass
+@csrf_exempt
+def create_participant(request):
+
+    request = json.loads(request.body)
+    game_id = request['game_id']
+    current_game = get_object_or_404(Game, id=game_id)
+    
+    participant = Participant(
+        name=request['name'],
+        game=current_game
+    )
+    participant.save()
+    participant = {
+        "participant_id": participant.id
+    }
+
+    return HttpResponse(json.dumps(participant))
 
 def get_participant_scores(request, game_id):
     pass

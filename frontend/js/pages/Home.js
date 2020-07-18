@@ -18,12 +18,12 @@ class Home extends React.Component {
     this.state = {
       error: null,
       isLoaded: false,
+      gameId: "",
       gameName: "",
       gameStatus: INACTIVE,
+      participantId: null,
       participantName: null,
       nameInput: "",
-      showQuestion: false,
-      showLeaderBoard: false,
       isHost: true,
     };
     this.setParticipantName = this.setParticipantName.bind(this);
@@ -36,7 +36,33 @@ class Home extends React.Component {
     this.setState({
       participantName: this.state.nameInput
     });
-    // this also needs to POST to create participant and return a participant id
+    const createParticipantUrl = `${DOMAIN}/create_participant/`
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        { 
+          name: this.state.nameInput,
+          game_id: this.state.gameId,
+        }
+        )
+  };
+    fetch(createParticipantUrl, requestOptions)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            participantName: this.state.nameInput,
+            participantId: result.participant_id
+          });
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
   }
 
   setNameInput(e) {
@@ -59,6 +85,7 @@ class Home extends React.Component {
         (result) => {
           this.setState({
             isLoaded: true,
+            gameId: gameId,
             gameName: result.name,
             gameStatus: result.status,
           });
